@@ -33,7 +33,7 @@ if !opts.dryrun
 end
 
 t = Toggl.new config['toggl_api_key'], config['nonbill']
-m = Mantis.new config['user'], config['pass'], config['mantis_url']
+m = Mantis.new config['user'], pass, config['mantis_url']
 
 if !opts.dryrun
     t.today.each do |ims, data|
