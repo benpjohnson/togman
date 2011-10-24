@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "patron"
+require "json"
+require 'savon'
+require 'highline/import'
+require 'yaml'
+
+require 'toggl.rb'
+require 'mantis.rb'
+
+def display_time t
+    total = 0
+    puts "\n"
+    t.today.each do |ims, data|
+        data.each do |item|
+            puts ims.to_s + " " + item[:desc] + " " + item[:duration].to_s + "m (" + item[:orig].to_s + "m logged)"
+            total += item[:duration]
+        end
+    end
+    puts "TOTAL: " + total.to_s
+end
+
+configfile = ENV['HOME'] + '/.togmanrc'
+if !File.file? configfile
+    puts 'Cannot open ' + configfile
+    exit
+end
+
+config = YAML::load_file configfile
+
+Savon.configure do |setting|
+  setting.log = false            # disable logging
+  # config.log_level = :info      # changing the log level
+end
+
+t = Toggl.new config['toggl_api_key'], config['nonbill']
+
+display_time t
+
+puts "\nEnter your Mantis password to log this time (Blank exits)"
+pass = ask('Password:') {|q| q.echo = '*'}
+
+if pass == ""
+    exit
+end
+
+m = Mantis.new config['user'], pass, config['mantis_url']
+
+t.today.each do |ims, data|
+    if !m.issue_exists ims
+        raise "Issue not found #{ims}"
+    end
+end
+
+free = []
+t.today.each do |ims, data|
+    data.each do |item|
+        m.add_note ims, item[:desc], item[:duration]
+    end
+end
