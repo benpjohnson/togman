@@ -30,8 +30,8 @@ end
 config = YAML::load_file configfile
 
 Savon.configure do |setting|
-  setting.log = false            # disable logging
-  # config.log_level = :info      # changing the log level
+  setting.log = false           # disable logging
+  #setting.log_level = :debug    # changing the log level
 end
 
 t = Toggl.new config['toggl_api_key'], config['nonbill']

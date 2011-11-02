@@ -17,7 +17,9 @@ class Toggl
 
     def entries (from, to)
         log = {}
+
         res = @sess.get('/api/v5/time_entries.json?start_date=' + from + '&end_date=' + to).body
+
         JSON.parse(res)["data"].each do |item|
             raw = item["description"]
 
