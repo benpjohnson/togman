@@ -45,8 +45,7 @@ XML
                 }
             end
         rescue Savon::Error
-            puts "ERROR!"
-            exit
+            puts "ERROR Logging " + issue_id + " " + text
         end
     end
 end
