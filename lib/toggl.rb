@@ -4,6 +4,8 @@ class Toggl
         @nonbill = nonbill
 
         @sess = Patron::Session.new
+        @sess.timeout = 60
+        @sess.connect_timeout = 60
         @sess.base_url = "https://www.toggl.com"
         @sess.username = api_key
         @sess.password = "api_token"
@@ -19,6 +21,7 @@ class Toggl
         log = {}
 
         res = @sess.get('/api/v5/time_entries.json?start_date=' + from + '&end_date=' + to).body
+        puts '/api/v5/time_entries.json?start_date=' + from + '&end_date=' + to
 
         JSON.parse(res)["data"].each do |item|
             raw = item["description"]
